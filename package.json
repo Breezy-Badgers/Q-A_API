@@ -1,0 +1,30 @@
+{
+  "name": "q-a_api",
+  "version": "1.0.0",
+  "description": "Questions and Answers API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "neo4j": "node ./db/dataPopulate.js",
+    "start": "nodemon ./server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Breezy-Badgers/Q-A_API.git"
+  },
+  "author": "Hoon Kang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Breezy-Badgers/Q-A_API/issues"
+  },
+  "homepage": "https://github.com/Breezy-Badgers/Q-A_API#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "neo4j-driver": "^1.7.6",
+    "nodemon": "^1.19.4",
+    "parse-neo4j": "^0.6.11",
+    "path": "^0.12.7"
+  }
+}
