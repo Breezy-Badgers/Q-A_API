@@ -1,6 +1,6 @@
-const neo4j = require("neo4j-driver").v1;
-const pw = require("../configure.js").pw;
-const port = 7474;
+//powerShell Script to parse big CSV file
+`$i=0; Get-Content C:\Users\Gavin\Downloads\Hospital_Revised_Flatfiles\HCAHPSHospital.csv --file name
+-ReadCount 2500 --# of line per split | %{$i++; $_ | Out-File C:\Users\Gavin\Downloads\Hospital_Revised_Flatfiles\split\splitfile_$i.csv} --keep $i.csv`;
 
 const driver = neo4j.driver(
   `bolt://localhost:7687`,
@@ -24,8 +24,7 @@ const createAnswerIndexPromise = session.run(
 const loadProductPromise = session.run(
   `USING PERIODIC COMMIT 1000
   LOAD CSV WITH HEADERS FROM "file:///product.csv" AS row
-  MERGE(product:Product {product_id: toInt(row.id)})
-    SET product.product_name = row.name
+  MERGE(product:Product {product_id: toInteger(row.product_id)})
   RETURN count(row)`
 );
 
@@ -65,27 +64,22 @@ const RelateQuestionAnswerPromise = session.run(
   RETURN count(r)`
 );
 
-const getAllQuestions = productID => {
-  return session.run(
-    `MATCH (product:Product{product_id:{product_ID}})-->(question:Question)-->(answer:Answer)
-    RETURN question,collect(answer)`,
-    { product_ID: productID }
-  );
-};
+const loadPicturesPromise = session.run(
+  `USING PERIODIC COMMIT 1000
+  LOAD CSV WITH HEADERS FROM "file:///answers_photos.csv" AS row
+  MERGE(pic:Picture {id: toInteger(row.id)})
+    SET pic.url=row.url
+  RETURN count(row)`
+);
 
-getAllQuestions(3)
-  .then(data => {
-    console.log(data.summary);
-  })
-  .then(() => {
-    return session.close();
-  })
-  .then(() => {
-    return driver.close();
-  })
-  .catch(err => {
-    console.log(err.message);
-  });
+const RelateAnswerPicturePromise = session.run(
+  `USING PERIODIC COMMIT 1000
+  LOAD CSV WITH HEADERS FROM "file:///answers_photos.csv" AS row
+  MATCH (answer:Answer {answer_id:toInteger(row.answer_id)})
+  MATCH (pic:Picture {id:toInteger(row.id)})
+  MERGE (answer)-[r:hasPicture]->(pic)
+  RETURN count(r)`
+);
 
 // const promiseResolver = promise => {
 //   promise
