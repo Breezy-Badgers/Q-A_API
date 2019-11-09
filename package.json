@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Breezy-Badgers/Q-A_API#readme",
   "dependencies": {
+    "bluebird": "^3.7.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "morgan": "^1.9.1",

@@ -2,28 +2,18 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const neo4j = require("neo4j-driver").v1;
-const path = require("path");
 const parser = require("parse-neo4j");
 const app = express();
 const db = require("./db/db.js");
+const dbHelper = require("./db/neo4jHelper");
 
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 const driver = neo4j.driver(
   `bolt://localhost:7687`,
   neo4j.auth.basic("neo4j", "hrnyc25")
 );
-
-getSession = function(context) {
-  if (context.neo4jSession) {
-    return context.neo4jSession;
-  } else {
-    context.neo4jSession = driver.session();
-    return context.neo4jSession;
-  }
-};
 
 app.get("/qa/:product_id", (req, res) => {
   let skip =
@@ -34,7 +24,7 @@ app.get("/qa/:product_id", (req, res) => {
 
   db.getAllQuestions(
     parseInt(req.params.product_id),
-    getSession(req),
+    dbHelper.getSession(req, driver),
     skip,
     show
   )
@@ -79,6 +69,38 @@ app.get("/qa/:question_id/answers", (req, res) => {
       res.sendStatus(404);
       console.log(err);
       session.close();
+    });
+});
+
+app.post("/qa/:product_id", (req, res) => {
+  const session = driver.session();
+  const product_id = parseInt(req.params.product_id);
+  const data = { ...req.body, date: new Date().toISOString().slice(0, 10) };
+  db.addQuestion(product_id, data, session)
+    .then(() => {
+      session.close();
+      res.sendStatus(201);
+    })
+    .catch(err => {
+      session.close();
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
+
+app.post("/qa/:question_id/answers", (req, res) => {
+  const session = driver.session();
+  const question_id = parseInt(req.params.question_id);
+  const data = { ...req.body, date: new Date().toISOString().slice(0, 10) };
+  db.addAnswer(question_id, data, session)
+    .then(() => {
+      session.close();
+      res.sendStatus(201);
+    })
+    .catch(err => {
+      session.close();
+      res.sendStatus(404);
+      console.log(err.message);
     });
 });
 
@@ -133,38 +155,6 @@ app.put("/qa/answer/:answer_id/report", (req, res) => {
       res.sendStatus(204);
     })
     .catch(err => {
-      res.sendStatus(404);
-      console.log(err.message);
-    });
-});
-
-app.post("/qa/:product_id", (req, res) => {
-  const session = driver.session();
-  const product_id = parseInt(req.params.product_id);
-  const data = req.body;
-  db.addQuestion(product_id, data, session)
-    .then(() => {
-      session.close();
-      res.sendStatus(201);
-    })
-    .catch(err => {
-      session.close();
-      res.sendStatus(404);
-      console.log(err.message);
-    });
-});
-
-app.post("/qa/:question_id/answers", (req, res) => {
-  const session = driver.session();
-  const question_id = parseInt(req.params.question_id);
-  const data = req.body;
-  db.addAnswer(question_id, data, session)
-    .then(() => {
-      session.close();
-      res.sendStatus(201);
-    })
-    .catch(err => {
-      session.close();
       res.sendStatus(404);
       console.log(err.message);
     });
