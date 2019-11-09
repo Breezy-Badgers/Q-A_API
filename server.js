@@ -15,21 +15,64 @@ const driver = neo4j.driver(
   `bolt://localhost:7687`,
   neo4j.auth.basic("neo4j", "hrnyc25")
 );
-const session = driver.session();
+
+getSession = function(context) {
+  if (context.neo4jSession) {
+    return context.neo4jSession;
+  } else {
+    context.neo4jSession = driver.session();
+    return context.neo4jSession;
+  }
+};
 
 app.get("/qa/:product_id", (req, res) => {
-  console.log(db, req.params.product_id);
-  db.getAllQuestions(parseInt(req.params.product_id), session)
+  let skip =
+    req.query.page && req.query.count
+      ? (parseInt(req.query.page) - 1) * parseInt(req.query.count)
+      : 0;
+  let show = req.query.count ? parseInt(req.query.count) : 5;
+
+  db.getAllQuestions(
+    parseInt(req.params.product_id),
+    getSession(req),
+    skip,
+    show
+  )
     .then(parser.parse)
     .then(result => {
+      // session.close();
       data = result[0];
       data.results.forEach(question => {
         let newAnswer = {};
         question.answers.forEach(answer => {
-          newAnswer[answer.id] = answer;
+          if (answer.id !== null) {
+            newAnswer[answer.id] = answer;
+          }
         });
         question.answers = newAnswer;
       });
+      res.send(data);
+    })
+    .catch(err => {
+      res.sendStatus(404);
+      console.log(err);
+      // session.close();
+    });
+});
+
+app.get("/qa/:question_id/answers", (req, res) => {
+  const session = driver.session();
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let count = req.query.count ? parseInt(req.query.count) : 5;
+  let skip = (page - 1) * count;
+
+  db.getAllAnswers(parseInt(req.params.question_id), session, skip, count)
+    .then(parser.parse)
+    .then(result => {
+      session.close();
+      data = result[0];
+      data.count = count;
+      data.page = page;
       res.send(data);
     })
     .catch(err => {
@@ -39,26 +82,94 @@ app.get("/qa/:product_id", (req, res) => {
     });
 });
 
-// app.get("/");
+app.put("/qa/question/:question_id/helpful", (req, res) => {
+  const session = driver.session();
+  let question_id = parseInt(req.params.question_id);
+  db.markQuestionHelpful(question_id, session)
+    .then(data => {
+      session.close();
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
+
+app.put("/qa/question/:question_id/report", (req, res) => {
+  const session = driver.session();
+  let question_id = parseInt(req.params.question_id);
+  db.reportQuestion(question_id, session)
+    .then(data => {
+      session.close();
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
+
+app.put("/qa/answer/:answer_id/helpful", (req, res) => {
+  const session = driver.session();
+  let answer_id = parseInt(req.params.answer_id);
+  db.markAnswerHelpful(answer_id, session)
+    .then(data => {
+      session.close();
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
+
+app.put("/qa/answer/:answer_id/report", (req, res) => {
+  const session = driver.session();
+  let answer_id = parseInt(req.params.answer_id);
+  db.reportAnswer(answer_id, session)
+    .then(data => {
+      session.close();
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
+
+app.post("/qa/:product_id", (req, res) => {
+  const session = driver.session();
+  const product_id = parseInt(req.params.product_id);
+  const data = req.body;
+  db.addQuestion(product_id, data, session)
+    .then(() => {
+      session.close();
+      res.sendStatus(201);
+    })
+    .catch(err => {
+      session.close();
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
+
+app.post("/qa/:question_id/answers", (req, res) => {
+  const session = driver.session();
+  const question_id = parseInt(req.params.question_id);
+  const data = req.body;
+  db.addAnswer(question_id, data, session)
+    .then(() => {
+      session.close();
+      res.sendStatus(201);
+    })
+    .catch(err => {
+      session.close();
+      res.sendStatus(404);
+      console.log(err.message);
+    });
+});
 
 app.listen(3000, () => {
   console.log("connected");
 });
-
-// `
-// MATCH p=(n:Product{product_id:2})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
-// WITH {
-// question_body:q.question_body,
-// question_id:q.question_id,
-// question_date:q.question_date,
-// asker_name:q.question_asker_name,
-// question_helpfulness: q.question_helpful,
-// reported: q.question_reported,
-// answers:collect(a)
-// } as questionResults
-// WITH {product_id:2, results:collect(questionResults)} as Result
-// RETURN Result
-// `
-
-// `MATCH (product:Product{product_id:{ID}})-->(question:Question)-->(answer:Answer)
-//         RETURN question,collect(answer) as answers`,
