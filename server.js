@@ -164,5 +164,5 @@ app.put("/qa/answer/:answer_id/report", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log("connected");
+  console.log(`listening on port ${port}`);
 });
