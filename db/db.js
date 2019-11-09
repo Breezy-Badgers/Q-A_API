@@ -129,15 +129,16 @@ module.exports = {
     c.answer_count=c.answer_count+1
     MERGE (q)-[r:hasAnswer]->(a)
     `;
-
-    for (let i = 0; i < data.photos.length; i++) {
-      let photoQuery = `
-      MERGE (pic${i}:Picture {id:c.picture_count})
-      SET c.picture_count=c.picture_count+1
-      SET pic${i}.url = "${data.photos[i]}"
-      MERGE (a)-[:hasPicture]->(pic${i})
-      `;
-      query = query + photoQuery;
+    if (data.photos) {
+      for (let i = 0; i < data.photos.length; i++) {
+        let photoQuery = `
+        MERGE (pic${i}:Picture {id:c.picture_count})
+        SET c.picture_count=c.picture_count+1
+        SET pic${i}.url = "${data.photos[i]}"
+        MERGE (a)-[:hasPicture]->(pic${i})
+        `;
+        query = query + photoQuery;
+      }
     }
 
     return currentSession.run(query, { question_id, ...data });

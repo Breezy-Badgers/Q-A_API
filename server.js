@@ -6,10 +6,13 @@ const parser = require("parse-neo4j");
 const app = express();
 const db = require("./db/db.js");
 const dbHelper = require("./db/neo4jHelper");
+const cors = require("cors");
+const port = 8080;
 
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors());
 const driver = neo4j.driver(
   `bolt://localhost:7687`,
   neo4j.auth.basic("neo4j", "hrnyc25")
@@ -160,6 +163,6 @@ app.put("/qa/answer/:answer_id/report", (req, res) => {
     });
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log("connected");
 });
