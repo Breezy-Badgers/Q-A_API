@@ -5,7 +5,7 @@
  | %{$i++; $_ | Out-File C:\Users\Hoon\.Neo4jDesktop\neo4jDatabases\database-4ff1a121-5006-44b3-a05a-de419ba62d52\installation-3.5.6\import\product_$i.csv}`;
 
 const driver = neo4j.driver(
-  `bolt://localhost:7687`,
+  `http://68.129.140.202:7687`,
   neo4j.auth.basic("neo4j", "hrnyc25")
 );
 const session = driver.session();
@@ -31,7 +31,7 @@ const loadProductPromise = session.run(
 );
 
 const loadQuestionPromise = session.run(
-  `USING PERIODIC COMMIT 1000
+  `USING PERIODIC COMMIT 1500
   LOAD CSV WITH HEADERS FROM "file:///questions.csv" AS row
   MERGE(q:Question {question_id: toInteger(row.id)})
     SET q.question_body=row.body, q.question_date=row.date_written, q.question_asker_name=row.asker_name, q.question_asker_email=
@@ -48,11 +48,19 @@ const loadAnswersPromise = session.run(
   RETURN count(row)`
 );
 
-const loadPicturesPromise = session.run(
+const loadPicturesPromiseV1 = session.run(
   `USING PERIODIC COMMIT 1000
   LOAD CSV WITH HEADERS FROM "file:///answers_photos.csv" AS row
   MERGE(pic:Picture {id: toInteger(row.id)})
     SET pic.url=row.url
+  RETURN count(row)`
+);
+
+const loadPicturesPromiseV2 = session.run(
+  `USING PERIODIC COMMIT 1000
+  LOAD CSV WITH HEADERS FROM "file:///answers_photos.csv" AS row
+  MATCH(answer:Answer {id: toInteger(row.id)})
+    SET answer.url=answer.url+row.url
   RETURN count(row)`
 );
 

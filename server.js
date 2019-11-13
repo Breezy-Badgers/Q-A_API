@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 const driver = neo4j.driver(
-  `bolt://localhost:7687`,
-  neo4j.auth.basic("neo4j", "hrnyc25")
+  `bolt://ec2-3-135-18-212.us-east-2.compute.amazonaws.com:7687`,
+  neo4j.auth.basic("neo4j", "1234")
 );
 
 app.get("/qa/:product_id", (req, res) => {
