@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.get("/loaderio-b33e58337b890618cc3bd09fc85bce39", (req, res) => {
-  req.send("loaderio-b33e58337b890618cc3bd09fc85bce39");
+  res.send("loaderio-b33e58337b890618cc3bd09fc85bce39");
 });
 const driver = neo4j.driver(
   `bolt://ec2-3-135-18-212.us-east-2.compute.amazonaws.com:7687`,
