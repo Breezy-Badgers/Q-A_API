@@ -1,20 +1,40 @@
 module.exports = {
+  // getAllQuestions: (productID, currentSession, skip, show) => {
+  //   return currentSession.run(
+  //     `
+  //     MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+  //     OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
+  //     OPTIONAL MATCH (a)-[rPic:hasPicture]->(pic:Picture)
+  //     WITH q,
+  //         {
+  //           id:a.answer_id,
+  //           body:a.answer_body,
+  //           date:a.answer_date,
+  //           answerer_name:a.answer_answerer_name,
+  //           helpfulness:a.answer_helpful,
+  //           photos:collect(pic)
+  //         } as answ
+
+  //     WITH {
+  //           question_body:q.question_body,
+  //           question_id:q.question_id,
+  //           question_date:q.question_date,
+  //           asker_name:q.question_asker_name,
+  //           question_helpfulness: q.question_helpful,
+  //           reported: q.question_reported,
+  //           answers:collect(answ)
+  //           } as questionResults SKIP {skip} LIMIT {show}
+  //     WITH {product_id:{ID}, results:collect(questionResults)} as Result
+  //     RETURN Result
+  //     `,
+  //     { ID: productID, skip: skip, show: show }
+  //   );
+
+  // },
   getAllQuestions: (productID, currentSession, skip, show) => {
     return currentSession.run(
-      `
-      MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
-      OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
-      OPTIONAL MATCH (a)-[rPic:hasPicture]->(pic:Picture)
-      WITH q,
-          {
-            id:a.answer_id,
-            body:a.answer_body,
-            date:a.answer_date,
-            answerer_name:a.answer_answerer_name,
-            helpfulness:a.answer_helpful,
-            photos:collect(pic)
-          } as answ
-
+      `MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+      OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
       WITH {
             question_body:q.question_body,
             question_id:q.question_id,
@@ -22,11 +42,10 @@ module.exports = {
             asker_name:q.question_asker_name,
             question_helpfulness: q.question_helpful,
             reported: q.question_reported,
-            answers:collect(answ)
+            answers:collect(a)
             } as questionResults SKIP {skip} LIMIT {show}
       WITH {product_id:{ID}, results:collect(questionResults)} as Result
-      RETURN Result
-      `,
+      RETURN Result`,
       { ID: productID, skip: skip, show: show }
     );
   },

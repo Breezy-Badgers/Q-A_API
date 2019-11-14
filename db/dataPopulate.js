@@ -59,8 +59,8 @@ const loadPicturesPromiseV1 = session.run(
 const loadPicturesPromiseV2 = session.run(
   `USING PERIODIC COMMIT 1000
   LOAD CSV WITH HEADERS FROM "file:///answers_photos.csv" AS row
-  MATCH(answer:Answer {id: toInteger(row.id)})
-    SET answer.url=answer.url+row.url
+  MATCH(answer:Answer {answer_id: toInteger(row.answer_id)})
+    SET answer.photos=answer.photos+row.url
   RETURN count(row)`
 );
 
