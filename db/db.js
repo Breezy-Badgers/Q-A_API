@@ -3,8 +3,8 @@ module.exports = {
     return currentSession.run(
       `
       MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
-      OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
-      OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
+      OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
+      OPTIONAL MATCH (a)-[rPic:hasPicture]->(pic:Picture)
       WITH q,
           {
             id:a.answer_id,
