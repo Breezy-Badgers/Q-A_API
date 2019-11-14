@@ -2,7 +2,9 @@ module.exports = {
   getAllQuestions: (productID, currentSession, skip, show) => {
     return currentSession.run(
       `
-      OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
+      MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+      OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
+      OPTIONAL MATCH (a)-[rPic:hasPicture]->(pic:Picture)
       WITH q,
           {
             id:a.answer_id,
@@ -31,7 +33,8 @@ module.exports = {
   getAllAnswers: (questionId, currentSession, skip, show) => {
     return currentSession.run(
       `
-      OPTIONAL MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
+      MATCH (q:Question{question_id:{questionId}})-[:hasAnswer]->(a:Answer)
+      OPTIONAL MATCH (a)-[rPic:hasPicture]->(pic:Picture)
       WITH q,
             {
               id:a.answer_id,
@@ -184,5 +187,3 @@ module.exports = {
 // MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
 // OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
 // OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
-// MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)
-// OPTIONAL MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
