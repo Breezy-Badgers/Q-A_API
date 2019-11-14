@@ -2,8 +2,6 @@ module.exports = {
   getAllQuestions: (productID, currentSession, skip, show) => {
     return currentSession.run(
       `
-      MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
-      OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
       OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
       WITH q,
           {
@@ -33,7 +31,6 @@ module.exports = {
   getAllAnswers: (questionId, currentSession, skip, show) => {
     return currentSession.run(
       `
-      MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)
       OPTIONAL MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
       WITH q,
             {
@@ -150,20 +147,20 @@ module.exports = {
 //   getAllQuestions: (productID, currentSession) => {
 //     return currentSession.run(
 //       `
-      // MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
-      // OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
-      // WITH {
-      //  question_body:q.question_body,
-      //  question_id:q.question_id,
-      //  question_date:q.question_date,
-      //  asker_name:q.question_asker_name,
-      //  question_helpfulness: q.question_helpful,
-      //  reported: q.question_reported,
-      //  answers:collect(a)
-      //  } as questionResults
-      //  WITH {product_id:{ID}, results:collect(questionResults)} as Result
-      //  RETURN Result`,
-      // { ID: productID }
+// MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+// OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
+// WITH {
+//  question_body:q.question_body,
+//  question_id:q.question_id,
+//  question_date:q.question_date,
+//  asker_name:q.question_asker_name,
+//  question_helpfulness: q.question_helpful,
+//  reported: q.question_reported,
+//  answers:collect(a)
+//  } as questionResults
+//  WITH {product_id:{ID}, results:collect(questionResults)} as Result
+//  RETURN Result`,
+// { ID: productID }
 //     );
 //   }
 // };
@@ -183,3 +180,9 @@ module.exports = {
 //       WITH {product_id:1, results:collect(questionResults)} as Result
 //       RETURN Result
 // `;
+
+// MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+// OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
+// OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
+// MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)
+// OPTIONAL MATCH (q:Question{question_id:1})-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
