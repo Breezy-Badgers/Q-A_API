@@ -33,8 +33,9 @@ module.exports = {
   // },
   getAllQuestions: (productID, currentSession, skip, show) => {
     return currentSession.run(
-      `MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
-      OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
+      `
+      MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+      OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
       WITH {
             question_body:q.question_body,
             question_id:q.question_id,
