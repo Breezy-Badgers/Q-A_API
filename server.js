@@ -22,26 +22,22 @@ const driver = neo4j.driver(
 );
 
 app.get("/qa/:product_id", (req, res) => {
+  const session = driver.session();
+  let productId = parseInt(req.params.product_id);
   let skip =
     req.query.page && req.query.count
       ? (parseInt(req.query.page) - 1) * parseInt(req.query.count)
       : 0;
   let show = req.query.count ? parseInt(req.query.count) : 5;
-
-  db.getAllQuestions(
-    parseInt(req.params.product_id),
-    dbHelper.getSession(req, driver),
-    skip,
-    show
-  )
+  // dbHelper.getSession(req, driver)
+  db.getAllQuestions(productId, session, skip, show)
     .then(parser.parse)
     .then(result => {
-      // session.close();
+      session.close();
       data = {
-        product_id: req.params.product_id,
+        product_id: productId,
         results: []
       };
-
       result.forEach(item => {
         data.results.push({
           ...item.results,
@@ -62,7 +58,7 @@ app.get("/qa/:product_id", (req, res) => {
     .catch(err => {
       res.sendStatus(404);
       console.log(err);
-      // session.close();
+      session.close();
     });
 });
 

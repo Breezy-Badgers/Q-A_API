@@ -64,23 +64,9 @@ module.exports = {
   getAllAnswers: (questionId, currentSession, skip, show) => {
     return currentSession.run(
       `
-      MATCH (q:Question{question_id:{questionId}})-[:hasAnswer]->(a:Answer)
-      OPTIONAL MATCH (q:Question{question_id:{questionId}})-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
-      WITH q,
-            {
-              id:a.answer_id,
-              body:a.answer_body,
-              date:a.answer_date,
-              answerer_name:a.answer_answerer_name,
-              helpfulness:a.answer_helpful,
-              photos:collect(pic)
-            } as answ SKIP {skip}  LIMIT {show}
-  
-      WITH {
-              question:q.question_id,
-              results:collect(answ)
-            } as  Result 
-      RETURN Result
+      MATCH (question:Question{question_id:{questionId}})-[:hasAnswer]->(a:Answer)
+      OPTIONAL MATCH (a:Answer)-[rPic:hasPicture]->(pic:Picture) 
+      RETURN question, collect(a) as results SKIP {skip} LIMIT {show}
       `,
       { questionId: questionId, skip: skip, show: show }
     );
@@ -218,3 +204,22 @@ module.exports = {
 // MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
 // OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)
 // OPTIONAL MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
+
+//Answers OG db side manipulation
+// MATCH (q:Question{question_id:{questionId}})-[:hasAnswer]->(a:Answer)
+//       OPTIONAL MATCH (q:Question{question_id:{questionId}})-[:hasAnswer]->(a:Answer)-[rPic:hasPicture]->(pic:Picture)
+//       WITH q,
+//             {
+//               id:a.answer_id,
+//               body:a.answer_body,
+//               date:a.answer_date,
+//               answerer_name:a.answer_answerer_name,
+//               helpfulness:a.answer_helpful,
+//               photos:collect(pic)
+//             } as answ SKIP {skip}  LIMIT {show}
+
+//       WITH {
+//               question:q.question_id,
+//               results:collect(answ)
+//             } as  Result
+//       RETURN Result
