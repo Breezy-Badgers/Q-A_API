@@ -72,7 +72,10 @@ app.get("/qa/:question_id/answers", (req, res) => {
     .then(parser.parse)
     .then(result => {
       session.close();
-      data = result[0];
+      data = {
+        ...result[0],
+        results=result[1]
+      }
       data.count = count;
       data.page = page;
       res.send(data);
