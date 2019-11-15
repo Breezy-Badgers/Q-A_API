@@ -17,7 +17,7 @@ app.get("/loaderio-a5083cd80b7b6f42f60e0248213ebd44", (req, res) => {
   res.send("loaderio-a5083cd80b7b6f42f60e0248213ebd44");
 });
 const driver = neo4j.driver(
-  `bolt://ec2-18-191-179-68.us-east-2.compute.amazonaws.com:7687`,
+  `bolt://172.31.30.53:7687`,
   neo4j.auth.basic("neo4j", "1234")
 );
 
