@@ -73,8 +73,8 @@ app.get("/qa/:question_id/answers", (req, res) => {
     .then(result => {
       session.close();
       data = {
-        ...result[0],
-        results: result[1]
+        ...result.question,
+        results: result.results
       };
       data.count = count;
       data.page = page;
