@@ -56,7 +56,7 @@ module.exports = {
       `
       MATCH (n:Product{product_id:1})-[:hasQuestion]->(results:Question)
       OPTIONAL MATCH (results)-[:hasAnswer]->(answers:Answer)
-      RETURN results,collect(answers) as answers`,
+      RETURN results,collect(answers) as answers SKIP {skip} LIMIT {show}`,
       { ID: productID, skip: skip, show: show }
     );
   },
