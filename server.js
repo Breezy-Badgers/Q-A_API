@@ -74,8 +74,8 @@ app.get("/qa/:question_id/answers", (req, res) => {
       session.close();
       data = {
         ...result[0],
-        results=result[1]
-      }
+        results: result[1]
+      };
       data.count = count;
       data.page = page;
       res.send(data);
