@@ -31,25 +31,36 @@ module.exports = {
   //   );
 
   // },
+  // getAllQuestions: (productID, currentSession, skip, show) => {
+  //   return currentSession.run(
+  //     `
+  //     MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
+  //     OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
+  //     WITH {
+  //           question_body:q.question_body,
+  //           question_id:q.question_id,
+  //           question_date:q.question_date,
+  //           asker_name:q.question_asker_name,
+  //           question_helpfulness: q.question_helpful,
+  //           reported: q.question_reported,
+  //           answers:collect(a)
+  //           } as questionResults SKIP {skip} LIMIT {show}
+  //     WITH {product_id:{ID}, results:collect(questionResults)} as Result
+  //     RETURN Result`,
+  //     { ID: productID, skip: skip, show: show }
+  //   );
+  // },
+
   getAllQuestions: (productID, currentSession, skip, show) => {
     return currentSession.run(
       `
-      MATCH (n:Product{product_id:{ID}})-[:hasQuestion]->(q:Question)
-      OPTIONAL MATCH (q)-[:hasAnswer]->(a:Answer)
-      WITH {
-            question_body:q.question_body,
-            question_id:q.question_id,
-            question_date:q.question_date,
-            asker_name:q.question_asker_name,
-            question_helpfulness: q.question_helpful,
-            reported: q.question_reported,
-            answers:collect(a)
-            } as questionResults SKIP {skip} LIMIT {show}
-      WITH {product_id:{ID}, results:collect(questionResults)} as Result
-      RETURN Result`,
+      MATCH (n:Product{product_id:1})-[:hasQuestion]->(results:Question)
+      OPTIONAL MATCH (results)-[:hasAnswer]->(answers:Answer)
+      RETURN results,collect(answers) as answers`,
       { ID: productID, skip: skip, show: show }
     );
   },
+
   getAllAnswers: (questionId, currentSession, skip, show) => {
     return currentSession.run(
       `

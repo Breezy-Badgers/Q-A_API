@@ -37,16 +37,26 @@ app.get("/qa/:product_id", (req, res) => {
     .then(parser.parse)
     .then(result => {
       // session.close();
-      data = result[0];
-      data.results.forEach(question => {
-        let newAnswer = {};
-        question.answers.forEach(answer => {
-          if (answer.id !== null) {
-            newAnswer[answer.id] = answer;
-          }
+      data = {
+        product_id: req.params.product_id,
+        results: []
+      };
+
+      result.forEach(item => {
+        data.results.push({
+          ...item.results,
+          answers: item.answers
         });
-        question.answers = newAnswer;
       });
+      // data.results.forEach(question => {
+      //   let newAnswer = {};
+      //   question.answers.forEach(answer => {
+      //     if (answer.id !== null) {
+      //       newAnswer[answer.id] = answer;
+      //     }
+      //   });
+      //   question.answers = newAnswer;
+      // });
       res.send(data);
     })
     .catch(err => {
