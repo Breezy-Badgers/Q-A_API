@@ -24,27 +24,15 @@ app.get("/loaderio-899fec3d958ff6945cd4c4046c4a86d2", (req, res) => {
 });
 
 app.get("/qa/:productId", (req, res) => {
-  res
-    .redirect(`http://${server[count]}/qa/${req.params.productId}`)
-    .then(data => {
-      toggle();
-    })
-    .catch(err => {
-      res.sendStatus(404);
-    });
+  res.redirect(`http://${server[count]}/qa/${req.params.productId}`);
+  toggle();
 });
 
 app.put("/qa/question/:question_id/helpful", (req, res) => {
-  res
-    .redirect(
-      `http://${server[count]}/qa/question/${req.params.question_id}/helpful`
-    )
-    .then(data => {
-      toggle();
-    })
-    .catch(err => {
-      res.sendStatus(404);
-    });
+  res.redirect(
+    `http://${server[count]}/qa/question/${req.params.question_id}/helpful`
+  );
+  toggle();
 });
 
 app.listen(port, () => {
