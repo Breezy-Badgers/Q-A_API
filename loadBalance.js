@@ -19,6 +19,8 @@ let toggle = () => {
     count = 0;
   }
 };
+
+//routes for loader-io test
 app.get("/loaderio-899fec3d958ff6945cd4c4046c4a86d2", (req, res) => {
   res.send("loaderio-899fec3d958ff6945cd4c4046c4a86d2");
 });
