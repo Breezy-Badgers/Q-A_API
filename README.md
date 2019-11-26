@@ -1,5 +1,5 @@
 # Q-A_API
-# Green Field Questions and Answers API Documentation
+# ShopBox Questions and Answers API Documentation
 
 <!-- INSERT GIF OF OVERALL APP HERE -->
 
