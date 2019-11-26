@@ -98,6 +98,8 @@ const RelateAnswerPicturePromise = session.run(
   RETURN count(r)`
 );
 
+// Past iteration of the queries
+
 // const promiseResolver = promise => {
 //   promise
 //     .then(data => {

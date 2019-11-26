@@ -8,17 +8,16 @@ const db = require("./db/db.js");
 const dbHelper = require("./db/neo4jHelper");
 const cors = require("cors");
 const port = 8080;
+const configure = require("./configure.js");
 
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-app.get("/loaderio-c3586854ed32ca460a5a43f211cd30f8", (req, res) => {
-  res.send("loaderio-c3586854ed32ca460a5a43f211cd30f8");
-});
+
 const driver = neo4j.driver(
   `bolt://172.31.30.53:7687`,
-  neo4j.auth.basic("neo4j", "1234")
+  neo4j.auth.basic("neo4j", configure.pw)
 );
 
 app.get("/qa/:product_id", (req, res) => {
@@ -44,15 +43,6 @@ app.get("/qa/:product_id", (req, res) => {
           answers: item.answers
         });
       });
-      // data.results.forEach(question => {
-      //   let newAnswer = {};
-      //   question.answers.forEach(answer => {
-      //     if (answer.id !== null) {
-      //       newAnswer[answer.id] = answer;
-      //     }
-      //   });
-      //   question.answers = newAnswer;
-      // });
       res.send(data);
     })
     .catch(err => {

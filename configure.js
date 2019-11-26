@@ -1,3 +1,3 @@
 module.export = {
-  pw: "hrnyc25"
+  pw: "1234"
 };
