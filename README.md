@@ -1,7 +1,6 @@
 # Q-A_API
 # ShopBox Questions and Answers API Documentation
 
-<!-- INSERT GIF OF OVERALL APP HERE -->
 
 The goal of this project was to design a system that can at least handle 100 requests per second across 8 endpoints to serve a Questions and Answers component for an e-commerce application. 
 
