@@ -2,7 +2,7 @@ module.exports = {
   getAllQuestions: (productID, currentSession, skip, show) => {
     return currentSession.run(
       `
-      MATCH (n:Product{product_id:1})-[:hasQuestion]->(results:Question)
+      MATCH (n:Product{product_id: ID})-[:hasQuestion]->(results:Question)
       OPTIONAL MATCH (results)-[:hasAnswer]->(answers:Answer)
       RETURN results,collect(answers) as answers SKIP {skip} LIMIT {show}`,
       { ID: productID, skip: skip, show: show }
